@@ -1,52 +1,85 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::time::Duration;
+mod state;
+mod utils;
+use std::sync::Arc;
 
-use tokio::sync::oneshot;
+use state::ConfigsState;
+use tokio::sync::Mutex;
 
-#[taurpc::procedures(export_to = "../src/bindings.ts")]
-trait Api {
-    #[taurpc(alias = "_hello_world_")]
-    async fn hello_world();
+#[taurpc::ipc_type]
+pub struct Joint {
+    name: String,
+    id: String,
+    mesh_id: String,
+}
 
-    #[taurpc(event)]
-    async fn event_test();
+#[taurpc::ipc_type]
+pub struct Config {
+    name: String,
+    description: String,
+    model_path: String,
+    joints: Vec<Joint>,
+}
+
+#[taurpc::procedures(export_to = "../src/lib/bindings.ts")]
+trait RootApi {
+    async fn get_configs() -> Vec<Config>;
 }
 
 #[derive(Clone)]
-struct ApiImpl;
+struct RootApiImpl {
+    state: AppState,
+}
 
 #[taurpc::resolvers]
-impl Api for ApiImpl {
-    async fn hello_world(self) {
-        println!("Hello world");
+impl RootApi for RootApiImpl {
+    async fn get_configs(self) -> Vec<Config> {
+        self.state.lock().await.get_configs()
     }
 }
 
+#[taurpc::procedures(path = "events", event_trigger = EventsTrigger)]
+trait Events {
+    #[taurpc(event)]
+    async fn configs_changed();
+}
+
+#[derive(Clone)]
+struct EventsImpl;
+
+#[taurpc::resolvers]
+impl Events for EventsImpl {}
+
+type AppState = Arc<Mutex<ConfigsState>>;
+
 #[tokio::main]
 async fn main() {
-    let (tx, rx) = oneshot::channel();
+    let state = Arc::new(Mutex::new(ConfigsState::new()));
 
-    tokio::spawn(async move {
-        let app_handle = rx.await.unwrap();
-        let trigger = TauRpcApiEventTrigger::new(app_handle);
-
-        let mut interval = tokio::time::interval(Duration::from_secs(1));
-        loop {
-            interval.tick().await;
-
-            trigger.hello_world()?;
-        }
-
-        #[allow(unreachable_code)]
-        Ok::<(), tauri::Error>(())
-    });
+    let router = taurpc::Router::new()
+        .merge(
+            RootApiImpl {
+                state: state.clone(),
+            }
+            .into_handler(),
+        )
+        .merge(EventsImpl.into_handler());
 
     tauri::Builder::default()
-        .invoke_handler(taurpc::create_ipc_handler(ApiImpl.into_handler()))
-        .setup(|app| {
-            tx.send(app.handle()).unwrap();
+        .invoke_handler(router.into_handler())
+        .setup(move |app| {
+            let app_handle = app.handle();
+            let state = state.clone();
+            tokio::spawn(async move {
+                let path = app_handle.path_resolver().app_local_data_dir().unwrap();
+                let mut state = state.lock().await;
+                state.set_local_data_path(path);
+                // Already start loading the configs
+                state.load_configs();
+                // drop(state);
+            });
             Ok(())
         })
         .run(tauri::generate_context!())

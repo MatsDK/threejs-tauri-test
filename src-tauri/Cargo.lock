@@ -2865,22 +2865,23 @@ dependencies = [
 
 [[package]]
 name = "taurpc"
-version = "0.1.7"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7074533ed2ca6e243fd7bae8b3de9b65801c5a3ca1f2e4a7082792dd60b3b346"
+checksum = "9b4f6636797d259b72b11d9f03828134fa72d601e1de8cea9347af1219114e6b"
 dependencies = [
  "serde",
  "serde_json",
  "specta",
  "tauri",
  "taurpc-macros",
+ "tokio",
 ]
 
 [[package]]
 name = "taurpc-macros"
-version = "0.1.6"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca0192178f99dd42daf57ce1a218d7fbe1a45a3f1630d2c28e9a1a2c7e67bc7b"
+checksum = "cc2dcd13e269c1ff6696a5d15b91b793af2c8b55a81b509cb515e7b6566d60e6"
 dependencies = [
  "proc-macro2",
  "quote",
