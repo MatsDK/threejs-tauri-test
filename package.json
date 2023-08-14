@@ -7,12 +7,14 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "format": "dprint fmt"
   },
   "dependencies": {
     "@react-three/drei": "^9.80.0",
     "@react-three/fiber": "^8.13.6",
     "@tauri-apps/api": "^1.4.0",
+    "jotai": "^2.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "taurpc": "^1.4.0",
@@ -26,6 +28,7 @@
     "@types/three": "^0.154.0",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.14",
+    "dprint": "^0.40.2",
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",

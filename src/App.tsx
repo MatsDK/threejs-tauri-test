@@ -1,5 +1,5 @@
-import { ThreeCanvas } from './components/Canvas';
-import { SideBar } from './components/SideBar';
+import { ThreeCanvas } from './components/Canvas'
+import { SideBar } from './components/SideBar'
 
 const App = () => {
   return (
@@ -7,8 +7,7 @@ const App = () => {
       <SideBar />
       <ThreeCanvas />
     </div>
-  );
-
+  )
 }
 
-export default App;
+export default App

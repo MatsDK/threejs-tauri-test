@@ -25,8 +25,6 @@ impl ConfigsState {
         if !path.exists() {
             if let Err(err) = fs::create_dir_all(&path) {
                 eprintln!("Error creating directory: {}", err);
-            } else {
-                println!("Directory created successfully.");
             }
         }
         self.local_data_path = Some(path);
