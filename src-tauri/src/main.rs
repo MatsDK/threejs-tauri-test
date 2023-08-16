@@ -11,8 +11,9 @@ use tokio::sync::Mutex;
 #[taurpc::ipc_type]
 pub struct Constraint {
     axis: String,
-    min: i16,
-    max: i16,
+    min: f32,
+    home: f32,
+    max: f32,
 }
 
 #[taurpc::ipc_type]

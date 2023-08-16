@@ -1,13 +1,18 @@
-import { OrbitControls } from '@react-three/drei'
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
+import { OrbitControls, TransformControls } from '@react-three/drei'
+import { Canvas, useLoader } from '@react-three/fiber'
 import { appLocalDataDir } from '@tauri-apps/api/path'
 import { convertFileSrc } from '@tauri-apps/api/tauri'
-import { useAtom, useAtomValue } from 'jotai'
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { useAtomValue } from 'jotai'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import * as THREE from 'three'
+import {
+  OrbitControls as OrbitControlsImpl,
+  TransformControls as TransformControlsImpl,
+} from 'three-stdlib'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-import { Bone, sceneStateAtom, selectedModelAtom } from '../lib/store'
+import { loadRobotModel } from '../lib/model/load'
+import { Model, sceneStateAtom, selectedModelAtom } from '../lib/store'
 
 const appLocalDataDirPath = await appLocalDataDir()
 
@@ -16,6 +21,35 @@ THREE.Object3D.DEFAULT_UP = new THREE.Vector3(0, 0, 1)
 
 export const ThreeCanvas = () => {
   const selectedModel = useAtomValue(selectedModelAtom)
+  const sceneState = useAtomValue(sceneStateAtom)
+
+  const [transform, setTransform] = useState<TransformControlsImpl | null>(null)
+  const transformRef = useCallback((node: TransformControlsImpl) => {
+    setTransform(node)
+  }, [])
+
+  const [orbit, setOrbit] = useState<OrbitControlsImpl | null>(null)
+  const orbitRef = useCallback((node: OrbitControlsImpl) => {
+    setOrbit(node)
+  }, [])
+
+  useEffect(() => {
+    if (transform) {
+      const callback: THREE.EventListener<
+        THREE.Event,
+        'dragging-changed',
+        TransformControlsImpl<THREE.Camera>
+      > = (
+        event,
+      ) => {
+        if (orbit) {
+          orbit.enabled = !event.value
+        }
+      }
+      transform.addEventListener('dragging-changed', callback)
+      return () => transform.removeEventListener('dragging-changed', callback)
+    }
+  }, [orbit, transform])
 
   return (
     <Canvas
@@ -34,117 +68,62 @@ export const ThreeCanvas = () => {
       <spotLight position={[-10, 0, 10]} intensity={1} color='#fff' />
       <spotLight position={[10, 0, -10]} intensity={1} color='#fff' />
       <spotLight position={[10, 0, 10]} intensity={1} color='#fff' />
-      <OrbitControls target={[0, 0, 0]} />
 
       <gridHelper
         args={[40, 40, 0x222255, 0x000000]}
         rotation={[Math.PI / 2, 0, 0]}
       />
+
       {/* <gridHelper args={[40, 40, 0x222222, 0x000000]} /> */}
       {/* <gridHelper args={[40, 40, 0x222255, 0xbbbbbb]} rotation={[Math.PI/2, 0, 0]}/> */}
       {/* <gridHelper args={[40, 40, 0x999999, 0xbbbbbb]} /> */}
 
-      {selectedModel && (
-        <Suspense fallback={null}>
-          <GltfModel />
-        </Suspense>
-      )}
+      <TransformControls mode='translate' ref={transformRef} size={.5} />
+      <OrbitControls ref={orbitRef} />
+
+      <group>
+        {sceneState.models.map(model => {
+          return (
+            <Suspense fallback={null} key={model.id}>
+              <GltfModel model={model} />
+            </Suspense>
+          )
+        })}
+      </group>
     </Canvas>
   )
 }
 
-const GltfModel = () => {
-  const selectedModel = useAtomValue(selectedModelAtom)!
-  const [sceneState, setSceneState] = useAtom(sceneStateAtom)
+const GltfModel = (
+  { model }: { model: Model },
+) => {
+  // const selectedModel = useAtomValue(selectedModelAtom)!
+
+  // const [sceneState, setSceneState] = useAtom(sceneStateAtom)
   const modelPath = convertFileSrc(
-    appLocalDataDirPath + `models\\${selectedModel?.model_path}`,
+    appLocalDataDirPath + `models\\${model.config.model_path}`,
   )
 
-  const position = [0, 0, 0]
-  const joint1 = useRef<THREE.Object3D>()
-  const joint2 = useRef<THREE.Object3D>()
-  const joint3 = useRef<THREE.Object3D>()
   const gltf: { scene: THREE.Group } = useLoader(GLTFLoader, modelPath)
   const [hovered, hover] = useState(false)
 
+  const translation = new THREE.Vector3(),
+    rotation = new THREE.Quaternion(),
+    scale = new THREE.Vector3()
+  model.transformation.decompose(translation, rotation, scale)
+
   useEffect(() => {
-    let bones: Map<string, Bone> = new Map()
-    selectedModel.joints.forEach((joint) => {
-      let boneObject = gltf.scene.getObjectByName(joint.id)
-      let mesh = gltf.scene.getObjectByName(
-        joint.mesh_id,
-      )
-
-      if (!boneObject || !mesh) return
-
-      bones.set(joint.id, {
-        boneObject,
-        mesh: mesh as THREE.Mesh,
-      })
-    })
-
-    setSceneState((prev) => {
-      prev.models[0]!.bones = bones
-      return prev
-    })
-
-    // if (joint1.current && joint2.current) return
-    // let bone0 = gltf.scene.getObjectByName('Bone0')!
-    // let bone1 = gltf.scene.getObjectByName('Bone1')!
-    // let bone2 = gltf.scene.getObjectByName('Bone2')!
-    // let bone3 = gltf.scene.getObjectByName('Bone3')!
-    // // let b1 = new THREE.Bone()
-    // // b1.position.y = bone0.position.y
-    // // // b1.(bone0)
-    // // let b2 = new THREE.Bone()
-    // // b2.position.y = bone1.position.y
-    // // // b2.add(bone1)
-    // // let b3 = new THREE.Bone()
-    // // b3.position.y = bone2.position.y
-    // // // b3.add(bone2)
-    // // let base = gltf.scene.getObjectByName("Base")
-    // // if (base) {
-    // //   base.material = new THREE.MeshStandardMaterial({})
-    // //   console.log(base.material)
-    // // }
-    // // let arm1 = gltf.scene.getObjectByName("Shoulder")
-    // // if (arm1) {
-    // //   arm1.material = new THREE.MeshStandardMaterial({})
-    // //   console.log(arm1.material)
-    // // }
-    // // let arm2 = gltf.scene.getObjectByName("Arm")
-    // // if (arm2) {
-    // //   arm2.material = new THREE.MeshStandardMaterial()
-    // //   console.log(arm2.material)
-    // // }
-    // joint1.current = gltf.scene.getObjectByName('Bone1')
-    // joint2.current = gltf.scene.getObjectByName('Bone2')
-    // joint3.current = gltf.scene.getObjectByName('Bone3')
+    loadRobotModel(model, gltf.scene)
   }, [gltf])
 
-  useFrame((state, delta) => {
-    // if (joint1.current) {
-    //   // ref.current.rotation.y += 0.003
-    //   joint1.current.rotation.y += 0.001
-    //   // console.log("joint1", joint1.current.getWorldQuaternion(new THREE.Quaternion()))
-    // }
-    // if (joint2.current) {
-    //   joint2.current.rotation.x = (joint2.current.rotation.x + 0.001)
-    //     % (Math.PI / 2)
-    //   // console.log("joint2", joint2.current.getWorldQuaternion(new THREE.Quaternion()))
-    // }
-    // if (joint3.current) {
-    //   joint3.current.rotation.x = (joint3.current.rotation.x + 0.001)
-    //     % (Math.PI / 2)
-    //   // console.log("joint3", joint3.current.getWorldQuaternion(new THREE.Quaternion()))
-    // }
-  })
-
   return (
-    <mesh>
+    <mesh
+      rotation={new THREE.Euler().setFromQuaternion(rotation)}
+      position={translation}
+      scale={scale}
+    >
       <primitive
         object={gltf.scene}
-        // position={position}
         // onPointerOver={(event) => hover(true)}
         // onPointerOut={(event) => hover(false)}
       />

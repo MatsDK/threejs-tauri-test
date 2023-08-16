@@ -1,12 +1,14 @@
+import { Provider } from 'jotai'
 import { ThreeCanvas } from './components/Canvas'
 import { SideBar } from './components/SideBar'
+import { store } from './lib/store'
 
 const App = () => {
   return (
-    <div>
+    <Provider store={store}>
       <SideBar />
       <ThreeCanvas />
-    </div>
+    </Provider>
   )
 }
 

@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@react-three/drei':
-    specifier: ^9.80.0
-    version: 9.80.0(@react-three/fiber@8.13.6)(@types/three@0.154.0)(react-dom@18.2.0)(react@18.2.0)(three@0.155.0)
+    specifier: ^9.80.3
+    version: 9.80.3(@react-three/fiber@8.13.6)(@types/three@0.154.0)(react-dom@18.2.0)(react@18.2.0)(three@0.155.0)
   '@react-three/fiber':
     specifier: ^8.13.6
     version: 8.13.6(react-dom@18.2.0)(react@18.2.0)(three@0.155.0)
@@ -25,6 +25,9 @@ dependencies:
   three:
     specifier: ^0.155.0
     version: 0.155.0
+  three-stdlib:
+    specifier: ^2.24.2
+    version: 2.24.2(three@0.155.0)
   zod:
     specifier: ^3.21.4
     version: 3.21.4
@@ -688,8 +691,8 @@ packages:
     resolution: {integrity: sha512-POu8Mk0hIU3lRXB3bGIGe4VHIwwDsQyoD1F394OK7STTiX9w4dG3cTLljjYswkQN+hDSHRrj4O36kuVa7KPU8Q==}
     dev: false
 
-  /@react-three/drei@9.80.0(@react-three/fiber@8.13.6)(@types/three@0.154.0)(react-dom@18.2.0)(react@18.2.0)(three@0.155.0):
-    resolution: {integrity: sha512-quBD0Ap7ygf9Yg94keIQpQNnveNSKoZUge9ybHd6UgE9QTdpfkPF3YgzTJLbDEoZKepCTE9ngpwUgFy+cpL9Pg==}
+  /@react-three/drei@9.80.3(@react-three/fiber@8.13.6)(@types/three@0.154.0)(react-dom@18.2.0)(react@18.2.0)(three@0.155.0):
+    resolution: {integrity: sha512-pavkh2qjyh3luf3X2NNMsTyzAW+vS0EmapRQoHUO/au3ha/Ag1JKX83p891O0fV5ne7I+Fet/cEzh8rAfhd+Wg==}
     peerDependencies:
       '@react-three/fiber': '>=8.0'
       react: '>=18.0'
@@ -721,7 +724,7 @@ packages:
       suspend-react: 0.1.3(react@18.2.0)
       three: 0.155.0
       three-mesh-bvh: 0.6.3(three@0.155.0)
-      three-stdlib: 2.23.13(three@0.155.0)
+      three-stdlib: 2.24.2(three@0.155.0)
       troika-three-text: 0.47.2(three@0.155.0)
       utility-types: 3.10.0
       zustand: 3.7.2(react@18.2.0)
@@ -1900,8 +1903,8 @@ packages:
       three: 0.155.0
     dev: false
 
-  /three-stdlib@2.23.13(three@0.155.0):
-    resolution: {integrity: sha512-WU4XHs4E6szAyoREzTs5bUAc1WFadiz5jRjNlA7aIIqf+raT4jfA320P0XmlyZz/wJwmpZnOuki4kAFsmadkTQ==}
+  /three-stdlib@2.24.2(three@0.155.0):
+    resolution: {integrity: sha512-+FWg+evDvjcuwIYopqEz6xCrqadSW6j855EV4/5w/kygwEc2BktB7s4Y8iZEQKGq8g6Srfj5eWQpSK0+51C4Hg==}
     peerDependencies:
       three: '>=0.128.0'
     dependencies:
