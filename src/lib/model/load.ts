@@ -1,24 +1,31 @@
+import * as THREE from 'three'
 import { DEG2RAD } from 'three/src/math/MathUtils.js'
+import { transformModalAtom } from '../../components/TransformModal'
 import { Bone, Model, sceneStateAtom, store } from '../store'
 
-export const loadRobotModel = (model: Model, model3D: THREE.Group) => {
+export const loadRobotModel = (model: Model, armature: THREE.Object3D) => {
   let bones: Map<string, Bone> = new Map()
 
   model.config.joints.forEach((joint) => {
-    let boneObject = model3D.getObjectByName(joint.id)
-    let mesh = model3D.getObjectByName(joint.mesh_id)
+    let boneObject = armature.getObjectByName(joint.id)
+    let mesh = armature.getObjectByName(joint.mesh_id)
 
     if (!boneObject || !mesh) return
 
     bones.set(joint.id, {
       boneObject,
-      mesh: mesh as THREE.Mesh,
+      mesh,
     })
   })
 
   store.set(sceneStateAtom, (prev) => {
     prev.models[0]!.bones = bones
+    prev.models[0]!.object = armature
     return prev
+  })
+
+  store.set(transformModalAtom, () => {
+    return { active: true, object: armature, mode: 'translate' }
   })
 
   homeModel(model)

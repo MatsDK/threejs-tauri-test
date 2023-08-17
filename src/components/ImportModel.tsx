@@ -8,7 +8,7 @@ import { sceneStateAtom, selectAtom } from '../lib/store'
 export const ImportModel = () => {
   const [configs, setConfigs] = useState<Config[]>([])
   const [, chooseModel] = useAtom(selectAtom)
-  const [, setScene] = useAtom(sceneStateAtom)
+  const [scene, setScene] = useAtom(sceneStateAtom)
 
   const getConfigs = async () => {
     try {
@@ -41,21 +41,16 @@ export const ImportModel = () => {
               <button
                 className='bg-zinc-800 px-3 rounded-sm font-medium hover:bg-opacity-50 transition '
                 onClick={() => {
-                  let transformation = new THREE.Matrix4()
-
-                  transformation.makeTranslation(new THREE.Vector3(5, 2, 0))
-                  transformation.makeRotationZ(Math.PI / 3)
-                  transformation.makeScale(.5, .5, .5)
-
                   setScene((prev) => {
                     prev.models.push({
                       config,
-                      id: Math.random().toString(),
-                      transformation,
+                      id: THREE.MathUtils.generateUUID(),
+                      object: null,
                       bones: new Map(),
                     })
-                    return prev
+                    return { ...prev }
                   })
+
                   chooseModel(config)
                 }}
               >
