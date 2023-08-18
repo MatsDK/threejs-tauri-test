@@ -42,12 +42,14 @@ export const ImportModel = () => {
                 className='bg-zinc-800 px-3 rounded-sm font-medium hover:bg-opacity-50 transition '
                 onClick={() => {
                   setScene((prev) => {
-                    prev.models.push({
+                    const id = THREE.MathUtils.generateUUID()
+                    prev.models.set(id, {
                       config,
-                      id: THREE.MathUtils.generateUUID(),
+                      id,
                       object: null,
                       bones: new Map(),
                     })
+
                     return { ...prev }
                   })
 

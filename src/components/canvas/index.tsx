@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { sceneStateAtom } from '../../lib/store'
 import { GltfModel } from './Model'
+import { Target } from './Target'
 
 export const orbitControlsRefAtom = atom<OrbitControlsImpl | null>(null)
 
@@ -47,10 +48,16 @@ export const ThreeCanvas = () => {
       <OrbitControls ref={orbitRef} />
 
       <group>
-        {sceneState.models.map(model => (
-          <Suspense fallback={null} key={model.id}>
+        {Array.from(sceneState.models).map(([id, model]) => (
+          <Suspense fallback={null} key={id}>
             <GltfModel model={model} />
           </Suspense>
+        ))}
+      </group>
+
+      <group>
+        {Array.from(sceneState.targets).map(([id, target]) => (
+          <Target key={id} target={target} />
         ))}
       </group>
     </Canvas>

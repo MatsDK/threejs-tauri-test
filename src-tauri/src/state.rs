@@ -1,5 +1,7 @@
 use std::{fs, path::PathBuf};
 
+use notify::{RecursiveMode, Watcher};
+
 use crate::{
     utils::{get_models_dir, load_configs},
     Config,
@@ -28,6 +30,21 @@ impl ConfigsState {
             }
         }
         self.local_data_path = Some(path);
+    }
+
+    pub fn watch_local_data_dir(&self) -> notify::Result<()> {
+        let mut watcher = notify::recommended_watcher(|res| match res {
+            Ok(event) => println!("event: {:?}", event),
+            Err(e) => println!("watch error: {:?}", e),
+        })?;
+
+        watcher.watch(
+            self.local_data_path.as_ref().unwrap().as_path(),
+            RecursiveMode::Recursive,
+        )?;
+        // println!("{:?}", self.local_data_path);
+
+        Ok(())
     }
 
     pub fn get_configs(&self) -> Vec<Config> {

@@ -2,8 +2,8 @@ import { TransformControls } from '@react-three/drei'
 import { useLoader } from '@react-three/fiber'
 import { appLocalDataDir } from '@tauri-apps/api/path'
 import { convertFileSrc } from '@tauri-apps/api/tauri'
-import { useAtomValue } from 'jotai'
-import { useCallback, useEffect, useState } from 'react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { TransformControls as TransformControlsImpl } from 'three-stdlib'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -11,6 +11,7 @@ import { loadRobotModel } from '../../lib/model/load'
 import { Model } from '../../lib/store'
 import { transformModalAtom } from '../TransformModal'
 import { orbitControlsRefAtom } from './'
+import { TransformObject } from './TransformObject'
 
 const appLocalDataDirPath = await appLocalDataDir()
 
@@ -21,6 +22,9 @@ export const GltfModel = (
     appLocalDataDirPath + `models\\${model.config.model_path}`,
   )
   const orbitControls = useAtomValue(orbitControlsRefAtom)
+  const [transformModalState, setTransformModalState] = useAtom(
+    transformModalAtom,
+  )
 
   const gltf: { scene: THREE.Group } = useLoader(GLTFLoader, modelPath)
 
@@ -29,13 +33,18 @@ export const GltfModel = (
     setTransform(node)
   }, [])
 
-  const transformState = useAtomValue(transformModalAtom)
-
   useEffect(() => {
     if (transform) {
-      // transform.addEventListener('change', (e) => {
-      //   console.log(e.target.object.position)
-      // })
+      // TODO: remove event listener
+      transform.addEventListener('objectChange', (e) => {
+        const object = e.target.object as THREE.Object3D
+
+        setTransformModalState((prev) => ({
+          ...prev,
+          position: object.position,
+          rotation: object.rotation,
+        }))
+      })
       const callback: THREE.EventListener<
         THREE.Event,
         'dragging-changed',
@@ -62,15 +71,7 @@ export const GltfModel = (
 
   return (
     <>
-      {transformState.active
-        && (
-          <TransformControls
-            mode={transformState.mode}
-            object={gltf.scene}
-            size={.5}
-            ref={transformRef}
-          />
-        )}
+      <TransformObject object={gltf.scene} />
       <primitive
         object={gltf.scene}
         // onPointerOver={(event) => hover(true)}

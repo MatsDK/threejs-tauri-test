@@ -6,6 +6,8 @@ type TransformModalState = { active: false } | {
   object: THREE.Object3D
   mode: 'translate' | 'rotate'
   // mode: 'translate' | 'rotate' | 'scale'
+  position: THREE.Vector3
+  rotation: THREE.Euler
 }
 
 export const transformModalAtom = atom<TransformModalState>({ active: false })
@@ -53,7 +55,7 @@ export const TransformModal = () => {
           className='text-sm px-1 cursor-pointer'
           htmlFor='position'
         >
-          Position (X, Y, Z)
+          Translation (X, Y, Z)
         </label>
         <div
           className='grid grid-cols-3 w-full '
@@ -63,18 +65,29 @@ export const TransformModal = () => {
             type='number'
             className='bg-red-400 text-black border border-zinc-600 rounded-sm'
             step={.1}
-            defaultValue={state.object.position.x}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                state.object.position.x = e.currentTarget.valueAsNumber
-              }
+            onChange={(e) => {
+              state.object.position.x = e.currentTarget.valueAsNumber
+              const position = state.position.setX(
+                e.currentTarget.valueAsNumber,
+              )
+              setState((prev) => ({ ...prev, position }))
             }}
+            value={state.position.x}
+            // onKeyDown={(e) => {
+            //   if (e.key === 'Enter') {
+            //     state.object.position.x = e.currentTarget.valueAsNumber
+            //     const position = state.position.setX(
+            //       e.currentTarget.valueAsNumber,
+            //     )
+            //     setState((prev) => ({ ...prev, position }))
+            //   }
+            // }}
           />
           <input
             type='number'
             className='bg-green-400 text-black  border border-zinc-600 rounded-sm '
             step={.1}
-            defaultValue={state.object.position.y}
+            value={state.position.y}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 state.object.position.y = e.currentTarget.valueAsNumber
@@ -85,7 +98,7 @@ export const TransformModal = () => {
             type='number'
             className='bg-blue-500 text-black border border-zinc-600 rounded-sm '
             step={.1}
-            defaultValue={state.object.position.z}
+            value={state.position.z}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 state.object.position.z = e.currentTarget.valueAsNumber
@@ -113,8 +126,8 @@ export const TransformModal = () => {
         >
           <input
             type='number'
-            className='bg-red-400 text-black border border-zinc-600 rounded-sm'
-            defaultValue={state.object.rotation.x * RAD2DEG}
+            className='bg-red-400 text-black border border-zinc-600 rounded-sm pl-1'
+            value={state.rotation.x * RAD2DEG}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 state.object.rotation.x = e.currentTarget.valueAsNumber
@@ -125,7 +138,7 @@ export const TransformModal = () => {
           <input
             type='number'
             className='bg-green-400 text-black  border border-zinc-600 rounded-sm '
-            defaultValue={state.object.rotation.y * RAD2DEG}
+            value={state.rotation.y * RAD2DEG}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 state.object.rotation.y = e.currentTarget.valueAsNumber
@@ -136,7 +149,7 @@ export const TransformModal = () => {
           <input
             type='number'
             className='bg-blue-500 text-black border border-zinc-600 rounded-sm '
-            defaultValue={state.object.rotation.z * RAD2DEG}
+            value={state.rotation.z * RAD2DEG}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 state.object.rotation.z = e.currentTarget.valueAsNumber

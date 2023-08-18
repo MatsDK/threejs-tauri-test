@@ -6,6 +6,7 @@ mod utils;
 use std::sync::Arc;
 
 use state::ConfigsState;
+use tauri::Manager;
 use tokio::sync::Mutex;
 
 #[taurpc::ipc_type]
@@ -79,6 +80,8 @@ async fn main() {
     tauri::Builder::default()
         .invoke_handler(router.into_handler())
         .setup(move |app| {
+            app.get_window("main").unwrap().open_devtools();
+
             let app_handle = app.handle();
             let state = state.clone();
             tokio::spawn(async move {
@@ -88,6 +91,8 @@ async fn main() {
                 // Already start loading the configs
                 state.load_configs();
                 // drop(state);
+
+                state.watch_local_data_dir().unwrap();
             });
             Ok(())
         })

@@ -30,14 +30,26 @@ export interface Bone {
 export interface Target {
   id: string
   name: string
-  transformation: THREE.Matrix4 | null
+  object: THREE.Object3D | null
+  // transformation: THREE.Matrix4 | null
 }
 
 interface SceneState {
-  targets: any[]
-  models: Model[]
+  targets: Map<string, Target>
+  models: Map<string, Model>
   // objects: any[]
 }
-export const sceneStateAtom = atom<SceneState>({ targets: [], models: [] })
+
+export const sceneStateAtom = atom<SceneState>({
+  targets: new Map(),
+  models: new Map(),
+})
 
 export const store = createStore()
+
+let targetId = 0
+export const nextTargetId = () =>
+  (targetId++).toLocaleString('en-US', {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  })

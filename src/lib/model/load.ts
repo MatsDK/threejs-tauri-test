@@ -19,13 +19,19 @@ export const loadRobotModel = (model: Model, armature: THREE.Object3D) => {
   })
 
   store.set(sceneStateAtom, (prev) => {
-    prev.models[0]!.bones = bones
-    prev.models[0]!.object = armature
+    prev.models.get(model.id)!.bones = bones
+    prev.models.get(model.id)!.object = armature
     return prev
   })
 
   store.set(transformModalAtom, () => {
-    return { active: true, object: armature, mode: 'translate' }
+    return {
+      active: true,
+      object: armature,
+      mode: 'translate',
+      rotation: new THREE.Euler(),
+      position: new THREE.Vector3(),
+    }
   })
 
   homeModel(model)
