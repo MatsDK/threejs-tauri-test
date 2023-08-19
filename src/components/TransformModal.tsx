@@ -1,11 +1,12 @@
 import { atom, useAtom } from 'jotai'
+import { FormEvent, useEffect, useRef } from 'react'
+import * as THREE from 'three'
 import { DEG2RAD, RAD2DEG } from 'three/src/math/MathUtils.js'
 
 type TransformModalState = { active: false } | {
   active: true
   object: THREE.Object3D
   mode: 'translate' | 'rotate'
-  // mode: 'translate' | 'rotate' | 'scale'
   position: THREE.Vector3
   rotation: THREE.Euler
 }
@@ -17,6 +18,14 @@ export const TransformModal = () => {
 
   if (!state.active) {
     return null
+  }
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault()
+
+    // Apply input values to Object3D
+    state.object.rotation.copy(state.rotation)
+    state.object.position.copy(state.position)
   }
 
   return (
@@ -57,55 +66,16 @@ export const TransformModal = () => {
         >
           Translation (X, Y, Z)
         </label>
-        <div
-          className='grid grid-cols-3 w-full '
+        <form
           id='position'
+          className='grid grid-cols-3 w-full '
+          onSubmit={submit}
         >
-          <input
-            type='number'
-            className='bg-red-400 text-black border border-zinc-600 rounded-sm'
-            step={.1}
-            onChange={(e) => {
-              state.object.position.x = e.currentTarget.valueAsNumber
-              const position = state.position.setX(
-                e.currentTarget.valueAsNumber,
-              )
-              setState((prev) => ({ ...prev, position }))
-            }}
-            value={state.position.x}
-            // onKeyDown={(e) => {
-            //   if (e.key === 'Enter') {
-            //     state.object.position.x = e.currentTarget.valueAsNumber
-            //     const position = state.position.setX(
-            //       e.currentTarget.valueAsNumber,
-            //     )
-            //     setState((prev) => ({ ...prev, position }))
-            //   }
-            // }}
-          />
-          <input
-            type='number'
-            className='bg-green-400 text-black  border border-zinc-600 rounded-sm '
-            step={.1}
-            value={state.position.y}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                state.object.position.y = e.currentTarget.valueAsNumber
-              }
-            }}
-          />
-          <input
-            type='number'
-            className='bg-blue-500 text-black border border-zinc-600 rounded-sm '
-            step={.1}
-            value={state.position.z}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                state.object.position.z = e.currentTarget.valueAsNumber
-              }
-            }}
-          />
-        </div>
+          <Input mode='translate' axis='x' />
+          <Input mode='translate' axis='y' />
+          <Input mode='translate' axis='z' />
+          <button className='hidden' type='submit'></button>
+        </form>
       </div>
 
       <div
@@ -120,45 +90,88 @@ export const TransformModal = () => {
         >
           Rotation deg (X, Y, Z)
         </label>
-        <div
+
+        <form
+          id='rotatoin'
           className='grid grid-cols-3 w-full '
-          id='rotation'
+          onSubmit={submit}
         >
-          <input
-            type='number'
-            className='bg-red-400 text-black border border-zinc-600 rounded-sm pl-1'
-            value={state.rotation.x * RAD2DEG}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                state.object.rotation.x = e.currentTarget.valueAsNumber
-                  * DEG2RAD
-              }
-            }}
-          />
-          <input
-            type='number'
-            className='bg-green-400 text-black  border border-zinc-600 rounded-sm '
-            value={state.rotation.y * RAD2DEG}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                state.object.rotation.y = e.currentTarget.valueAsNumber
-                  * DEG2RAD
-              }
-            }}
-          />
-          <input
-            type='number'
-            className='bg-blue-500 text-black border border-zinc-600 rounded-sm '
-            value={state.rotation.z * RAD2DEG}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                state.object.rotation.z = e.currentTarget.valueAsNumber
-                  * DEG2RAD
-              }
-            }}
-          />
-        </div>
+          <Input mode='rotate' axis='x' />
+          <Input mode='rotate' axis='y' />
+          <Input mode='rotate' axis='z' />
+          <button className='hidden' type='submit'></button>
+        </form>
       </div>
     </div>
+  )
+}
+
+interface InputProps {
+  mode: 'translate' | 'rotate'
+  axis: 'x' | 'y' | 'z'
+}
+
+const inputColors = {
+  'x': 'bg-red-400',
+  'y': 'bg-green-400',
+  'z': 'bg-blue-500',
+}
+
+const Input = ({ axis, mode }: InputProps) => {
+  const [state, setState] = useAtom(transformModalAtom)
+
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const m = mode === 'rotate' ? 'rotation' : 'position'
+
+  useEffect(() => {
+    if (!state.active || !inputRef.current) return
+    inputRef.current.valueAsNumber =
+      (mode === 'rotate' ? state[m][axis] * RAD2DEG : state[m][axis]) || 0
+  }, [state])
+
+  if (!state.active) return null
+
+  const defaultValue = () => {
+    if (mode === 'rotate') return state.rotation[axis] * RAD2DEG
+    state.position[axis]
+  }
+
+  return (
+    <input
+      type='number'
+      className={`${
+        inputColors[axis]
+      } text-black border border-zinc-600 rounded-sm`}
+      step='any'
+      onChange={(e) => {
+        // TODO: fix weird cursor behaviour with decimal points
+        const value = e.currentTarget.valueAsNumber
+
+        const position = state.position
+        const rotation = state.rotation
+        if (mode === 'translate') {
+          if (axis === 'x') {
+            position.setX(value)
+          } else if (axis === 'y') {
+            position.setY(value)
+          } else if (axis === 'z') {
+            position.setZ(value)
+          }
+        } else if (mode === 'rotate') {
+          if (axis === 'x') {
+            rotation.x = value * DEG2RAD
+          } else if (axis === 'y') {
+            rotation.y = value * DEG2RAD
+          } else if (axis === 'z') {
+            rotation.z = value * DEG2RAD
+          }
+        }
+
+        setState((prev) => ({ ...prev, position, rotation }))
+      }}
+      defaultValue={defaultValue()}
+      ref={inputRef}
+    />
   )
 }

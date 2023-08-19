@@ -22,6 +22,15 @@ export const TransformObject = (
 
   useEffect(() => {
     if (transform) {
+      if (object) {
+        // Sync original pos/rot with modal state
+        setTransformModalState((prev) => ({
+          ...prev,
+          position: object.position.clone(),
+          rotation: object.rotation.clone(),
+        }))
+      }
+
       const changeCb: THREE.EventListener<
         THREE.Event,
         'objectChange',
@@ -31,8 +40,8 @@ export const TransformObject = (
 
         setTransformModalState((prev) => ({
           ...prev,
-          position: object.position,
-          rotation: object.rotation,
+          position: object.position.clone(),
+          rotation: object.rotation.clone(),
         }))
       }
 

@@ -31,6 +31,8 @@ export interface Target {
   id: string
   name: string
   object: THREE.Object3D | null
+  pos?: THREE.Vector3
+  rot?: THREE.Euler
   // transformation: THREE.Matrix4 | null
 }
 

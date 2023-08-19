@@ -1,10 +1,7 @@
-import { TransformControls } from '@react-three/drei'
-import { useAtom } from 'jotai'
-import { useLayoutEffect, useRef } from 'react'
+import { useSetAtom } from 'jotai'
+import { useCallback, useLayoutEffect, useState } from 'react'
 import * as THREE from 'three'
-import { LineMaterial } from 'three-stdlib'
 import { sceneStateAtom, type Target as TargetType } from '../../lib/store'
-import { transformModalAtom } from '../TransformModal'
 import { TransformObject } from './TransformObject'
 
 const origin = new THREE.Vector3(0, 0, 0)
@@ -19,32 +16,35 @@ interface TargetProps {
 }
 
 export const Target = ({ target }: TargetProps) => {
-  const targetRef = useRef<THREE.Group>(null)
-  const [transformModalState, setTransformModalState] = useAtom(
-    transformModalAtom,
-  )
-  const [sceneState, setSceneState] = useAtom(sceneStateAtom)
+  const setSceneState = useSetAtom(sceneStateAtom)
+
+  const [targetRef, setTargetRef] = useState<THREE.Group | null>(null)
+  const targetCb = useCallback((node: THREE.Group) => {
+    setTargetRef(node)
+  }, [])
 
   useLayoutEffect(() => {
-    if (targetRef.current) {
+    if (targetRef) {
       setSceneState((prev) => {
-        prev.targets.get(target.id)!.object = targetRef.current
+        prev.targets.get(target.id)!.object = targetRef
         return prev
       })
 
-      const lines = targetRef.current.children as THREE.Line[]
+      const lines = targetRef.children as THREE.Line[]
       lines.forEach((line, i) => {
         line.geometry.setFromPoints(axisLines[i as keyof typeof axisLines])
       })
     }
-  }, [])
+  }, [targetRef])
 
   return (
     <>
-      <TransformObject object={targetRef.current} />
+      <TransformObject object={targetRef} />
 
       <group
-        ref={targetRef}
+        position={target.pos || [0, 0, 0]}
+        rotation={target.rot || [0, 0, 0]}
+        ref={targetCb}
         renderOrder={1}
       >
         <line>
