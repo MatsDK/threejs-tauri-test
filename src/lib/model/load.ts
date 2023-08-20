@@ -11,7 +11,6 @@ export const loadRobotModel = (model: Model, armature: THREE.Object3D) => {
     let mesh = armature.getObjectByName(joint.mesh_id)
 
     if (!boneObject || !mesh) return
-    // if (joint.id === 'Bone0') boneObject.rotation.x = 0
 
     bones.set(joint.id, {
       boneObject,
@@ -22,7 +21,7 @@ export const loadRobotModel = (model: Model, armature: THREE.Object3D) => {
   store.set(sceneStateAtom, (prev) => {
     prev.models.get(model.id)!.bones = bones
     prev.models.get(model.id)!.object = armature
-    return prev
+    return { ...prev }
   })
 
   store.set(transformModalAtom, () => {

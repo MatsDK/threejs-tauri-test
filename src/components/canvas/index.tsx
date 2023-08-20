@@ -21,7 +21,6 @@ export const ThreeCanvas = () => {
     (node: OrbitControlsImpl) => setOrbitControls(node),
     [],
   )
-
   return (
     <Canvas
       style={{
@@ -46,20 +45,40 @@ export const ThreeCanvas = () => {
       />
 
       <OrbitControls ref={orbitRef} />
+      <OutlineController>
+        <group>
+          {Array.from(sceneState.models).map(([id, model]) => (
+            <Suspense fallback={null} key={id}>
+              <GltfModel model={model} />
+            </Suspense>
+          ))}
 
-      <group>
-        {Array.from(sceneState.models).map(([id, model]) => (
-          <Suspense fallback={null} key={id}>
-            <GltfModel model={model} />
-          </Suspense>
-        ))}
-      </group>
-
-      <group>
-        {Array.from(sceneState.targets).map(([id, target]) => (
-          <Target key={id} target={target} />
-        ))}
-      </group>
+          {Array.from(sceneState.targets).map(([id, target]) => (
+            <Target key={id} target={target} />
+          ))}
+        </group>
+      </OutlineController>
     </Canvas>
+  )
+}
+
+import { EffectComposer, Outline, Selection } from '@react-three/postprocessing'
+
+const OutlineController = (
+  { children }: { children: React.ReactElement },
+) => {
+  return (
+    <Selection>
+      <EffectComposer multisampling={8} autoClear={false}>
+        <Outline
+          blur
+          visibleEdgeColor={0xffffff}
+          edgeStrength={2}
+          width={1500}
+          hiddenEdgeColor={0x0000ff}
+        />
+        {children}
+      </EffectComposer>
+    </Selection>
   )
 }

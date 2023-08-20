@@ -1,8 +1,10 @@
 import { loadRobotModel } from '@lib/model/load'
-import { Model } from '@lib/store'
+import { Model, selectedModelAtom } from '@lib/store'
 import { useLoader } from '@react-three/fiber'
+import { Select } from '@react-three/postprocessing'
 import { appLocalDataDir } from '@tauri-apps/api/path'
 import { convertFileSrc } from '@tauri-apps/api/tauri'
+import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -13,6 +15,7 @@ const appLocalDataDirPath = await appLocalDataDir()
 export const GltfModel = (
   { model }: { model: Model },
 ) => {
+  const [selectedModel] = useAtom(selectedModelAtom)
   const modelPath = convertFileSrc(
     appLocalDataDirPath + `models\\${model.config.model_path}`,
   )
@@ -29,11 +32,13 @@ export const GltfModel = (
   return (
     <>
       <TransformObject object={gltf.scene} />
-      <primitive
-        object={gltf.scene}
-        // onPointerOver={(event) => hover(true)}
-        // onPointerOut={(event) => hover(false)}
-      />
+      <Select enabled={selectedModel?.id === model.id}>
+        <primitive
+          object={gltf.scene}
+          // onPointerOver={(event) => hover(true)}
+          // onPointerOut={(event) => hover(false)}
+        />
+      </Select>
     </>
   )
 }

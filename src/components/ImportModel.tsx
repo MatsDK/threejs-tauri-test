@@ -1,14 +1,19 @@
 import { Config } from '@lib/bindings'
 import { taurpc } from '@lib/ipc'
-import { sceneStateAtom, selectAtom } from '@lib/store'
-import { useAtom } from 'jotai'
+import {
+  importModelAtom,
+  sceneStateAtom,
+  selectedModelIdAtom,
+} from '@lib/store'
+import { useAtom, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import * as THREE from 'three'
 
 export const ImportModel = () => {
   const [configs, setConfigs] = useState<Config[]>([])
-  const [, chooseModel] = useAtom(selectAtom)
   const [scene, setScene] = useAtom(sceneStateAtom)
+  const importModel = useSetAtom(importModelAtom)
+  const setSelectedModelId = useSetAtom(selectedModelIdAtom)
 
   const getConfigs = async () => {
     try {
@@ -41,8 +46,8 @@ export const ImportModel = () => {
               <button
                 className='bg-zinc-800 px-3 rounded-sm font-medium hover:bg-opacity-50 transition '
                 onClick={() => {
+                  const id = THREE.MathUtils.generateUUID()
                   setScene((prev) => {
-                    const id = THREE.MathUtils.generateUUID()
                     prev.models.set(id, {
                       config,
                       id,
@@ -53,7 +58,7 @@ export const ImportModel = () => {
                     return { ...prev }
                   })
 
-                  chooseModel(config)
+                  importModel(id)
                 }}
               >
                 Add

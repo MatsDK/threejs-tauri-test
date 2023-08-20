@@ -9,9 +9,15 @@ export enum SidebarState {
 
 export const sidebarStateAtom = atom(SidebarState.CHOOSE_MODEL)
 
-export const selectedModelAtom = atom<Config | null>(null)
-export const selectAtom = atom(null, (_get, set, update: Config) => {
-  set(selectedModelAtom, update)
+export const selectedModelIdAtom = atom<string | null>(null)
+export const selectedModelAtom = atom((get) => {
+  const id = get(selectedModelIdAtom)
+  if (!id) return null
+  return get(sceneStateAtom).models.get(id) || null
+})
+
+export const importModelAtom = atom(null, (_get, set, id: string) => {
+  set(selectedModelIdAtom, id)
   set(sidebarStateAtom, SidebarState.SCENE_INFO)
 })
 
@@ -33,7 +39,6 @@ export interface Target {
   object: THREE.Object3D | null
   pos?: THREE.Vector3
   rot?: THREE.Euler
-  // transformation: THREE.Matrix4 | null
 }
 
 interface SceneState {
@@ -46,7 +51,6 @@ export const sceneStateAtom = atom<SceneState>({
   targets: new Map(),
   models: new Map(),
 })
-
 export const store = createStore()
 
 let targetId = 0
