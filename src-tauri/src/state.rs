@@ -1,11 +1,9 @@
-use std::{fs, path::PathBuf};
-
-use notify::{RecursiveMode, Watcher};
-
 use crate::{
+    ipc::Config,
     utils::{get_models_dir, load_configs},
-    Config,
 };
+use notify::{RecursiveMode, Watcher};
+use std::{fs, path::PathBuf};
 
 #[derive(Default)]
 pub struct ConfigsState {

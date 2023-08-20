@@ -1,0 +1,84 @@
+{
+  "name": "Model 2",
+  "description": "Second testing model",
+  "model_path": "model2.glb",
+  "tcp_offset": [
+    0,
+    0,
+    0.0306
+  ],
+  "joints": [
+    {
+      "name": "Base",
+      "id": "Bone0",
+      "mesh_id": "Base",
+      "constraints": null
+    },
+    {
+      "name": "Shoulder",
+      "id": "Bone1",
+      "mesh_id": "Shoulder",
+      "constraints": {
+        "axis": "y",
+        "min": -180,
+        "home": 0,
+        "max": 180
+      }
+    },
+    {
+      "name": "Arm",
+      "id": "Bone2",
+      "mesh_id": "Arm",
+      "constraints": {
+        "axis": "x",
+        "min": -90,
+        "home": 0,
+        "max": 90
+      }
+    },
+    {
+      "name": "Elbow",
+      "id": "Bone3",
+      "mesh_id": "Elbow",
+      "constraints": {
+        "axis": "x",
+        "min": -90,
+        "home": 82.56812,
+        "max": 90
+      }
+    },
+    {
+      "name": "Forearm",
+      "id": "Bone4",
+      "mesh_id": "Forearm",
+      "constraints": {
+        "axis": "y",
+        "min": -180,
+        "home": 0,
+        "max": 180
+      }
+    },
+    {
+      "name": "Wrist",
+      "id": "Bone5",
+      "mesh_id": "Wrist",
+      "constraints": {
+        "axis": "x",
+        "min": -90,
+        "home": 90,
+        "max": 90
+      }
+    },
+    {
+      "name": "Fingertip",
+      "id": "Bone6",
+      "mesh_id": "Fingertip",
+      "constraints": {
+        "axis": "y",
+        "min": -180,
+        "home": 0,
+        "max": 180
+      }
+    }
+  ]
+}

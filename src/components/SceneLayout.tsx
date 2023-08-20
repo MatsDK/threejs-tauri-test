@@ -1,5 +1,5 @@
+import { sceneStateAtom } from '@lib/store'
 import { useAtomValue } from 'jotai'
-import { sceneStateAtom } from '../lib/store'
 import { RobotControllerList } from './RobotList'
 import { TargetList } from './TargetList'
 

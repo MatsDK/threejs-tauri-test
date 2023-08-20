@@ -36,6 +36,9 @@ devDependencies:
   '@tauri-apps/cli':
     specifier: ^1.4.0
     version: 1.4.0
+  '@types/node':
+    specifier: ^20.5.1
+    version: 20.5.1
   '@types/react':
     specifier: ^18.2.15
     version: 18.2.15
@@ -65,7 +68,7 @@ devDependencies:
     version: 5.0.2
   vite:
     specifier: ^4.4.4
-    version: 4.4.4
+    version: 4.4.4(@types/node@20.5.1)
 
 packages:
 
@@ -886,6 +889,10 @@ packages:
     resolution: {integrity: sha512-goh23EGr6CLV6aKPwN1p8kBD/7tT5V/bLpToSbarKrwVejqNrspVrv8DhliteYkkhZYrlq/fwKZRRUzH4XN88w==}
     dev: false
 
+  /@types/node@20.5.1:
+    resolution: {integrity: sha512-4tT2UrL5LBqDwoed9wZ6N3umC4Yhz3W3FloMmiiG4JwmUJWpie0c7lcnUNd4gtMKuDEO4wRVS8B6Xa0uMRsMKg==}
+    dev: true
+
   /@types/offscreencanvas@2019.7.0:
     resolution: {integrity: sha512-PGcyveRIpL1XIqK8eBsmRBt76eFgtzuPiSTyKHZxnGemp2yzGzWpjYKAfK3wIMiU7eH+851yEpiuP8JZerTmWg==}
     dev: false
@@ -960,7 +967,7 @@ packages:
       '@babel/plugin-transform-react-jsx-self': 7.22.5(@babel/core@7.22.9)
       '@babel/plugin-transform-react-jsx-source': 7.22.5(@babel/core@7.22.9)
       react-refresh: 0.14.0
-      vite: 4.4.4
+      vite: 4.4.4(@types/node@20.5.1)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1996,7 +2003,7 @@ packages:
     engines: {node: '>= 4'}
     dev: false
 
-  /vite@4.4.4:
+  /vite@4.4.4(@types/node@20.5.1):
     resolution: {integrity: sha512-4mvsTxjkveWrKDJI70QmelfVqTm+ihFAb6+xf4sjEU2TmUCTlVX87tmg/QooPEMQb/lM9qGHT99ebqPziEd3wg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -2024,6 +2031,7 @@ packages:
       terser:
         optional: true
     dependencies:
+      '@types/node': 20.5.1
       esbuild: 0.18.16
       postcss: 8.4.27
       rollup: 3.26.3

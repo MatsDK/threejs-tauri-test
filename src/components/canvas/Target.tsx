@@ -1,7 +1,7 @@
+import { sceneStateAtom, type Target as TargetType } from '@lib/store'
 import { useSetAtom } from 'jotai'
 import { useCallback, useLayoutEffect, useState } from 'react'
 import * as THREE from 'three'
-import { sceneStateAtom, type Target as TargetType } from '../../lib/store'
 import { TransformObject } from './TransformObject'
 
 const origin = new THREE.Vector3(0, 0, 0)

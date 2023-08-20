@@ -1,5 +1,5 @@
+import { SidebarState, sidebarStateAtom } from '@lib/store'
 import { useAtom } from 'jotai'
-import { SidebarState, sidebarStateAtom } from '../lib/store'
 import { ImportModel } from './ImportModel'
 import { SceneLayout } from './SceneLayout'
 import { TransformModal } from './TransformModal'

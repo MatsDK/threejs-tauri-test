@@ -9,13 +9,6 @@ export type Joint = {
   constraints: Constraint | null
 }
 
-export type Config = {
-  name: string
-  description: string
-  model_path: string
-  joints: Joint[]
-}
-
 export type TauRpcRootApiOutputTypes = {
   proc_name: 'get_configs'
   output_type: Config[]
@@ -28,14 +21,22 @@ export type Constraint = {
   max: number
 }
 
-export type TauRpcEventsInputs = {
-  proc_name: 'configs_changed'
-  input_type: null
-}
-
 export type TauRpcEventsOutputTypes = {
   proc_name: 'configs_changed'
   output_type: null
+}
+
+export type Config = {
+  name: string
+  description: string
+  model_path: string
+  joints: Joint[]
+  tcp_offset: number[]
+}
+
+export type TauRpcEventsInputs = {
+  proc_name: 'configs_changed'
+  input_type: null
 }
 
 import { createTauRPCProxy as createProxy } from 'taurpc'

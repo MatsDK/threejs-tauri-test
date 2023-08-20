@@ -1,6 +1,6 @@
+import { transformModalAtom } from '@components/TransformModal'
 import * as THREE from 'three'
 import { DEG2RAD } from 'three/src/math/MathUtils.js'
-import { transformModalAtom } from '../../components/TransformModal'
 import { Bone, Model, sceneStateAtom, store } from '../store'
 
 export const loadRobotModel = (model: Model, armature: THREE.Object3D) => {
@@ -11,6 +11,7 @@ export const loadRobotModel = (model: Model, armature: THREE.Object3D) => {
     let mesh = armature.getObjectByName(joint.mesh_id)
 
     if (!boneObject || !mesh) return
+    // if (joint.id === 'Bone0') boneObject.rotation.x = 0
 
     bones.set(joint.id, {
       boneObject,

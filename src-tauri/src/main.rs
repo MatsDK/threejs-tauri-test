@@ -1,68 +1,16 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod ipc;
 mod state;
 mod utils;
-use std::sync::Arc;
+
+use ipc::*;
 
 use state::ConfigsState;
+use std::sync::Arc;
 use tauri::Manager;
 use tokio::sync::Mutex;
-
-#[taurpc::ipc_type]
-pub struct Constraint {
-    axis: String,
-    min: f32,
-    home: f32,
-    max: f32,
-}
-
-#[taurpc::ipc_type]
-pub struct Joint {
-    name: String,
-    id: String,
-    mesh_id: String,
-    constraints: Option<Constraint>,
-}
-
-#[taurpc::ipc_type]
-pub struct Config {
-    name: String,
-    description: String,
-    model_path: String,
-    joints: Vec<Joint>,
-}
-
-#[taurpc::procedures(export_to = "../src/lib/bindings.ts")]
-trait RootApi {
-    async fn get_configs() -> Vec<Config>;
-}
-
-#[derive(Clone)]
-struct RootApiImpl {
-    state: AppState,
-}
-
-#[taurpc::resolvers]
-impl RootApi for RootApiImpl {
-    async fn get_configs(self) -> Vec<Config> {
-        self.state.lock().await.get_configs()
-    }
-}
-
-#[taurpc::procedures(path = "events", event_trigger = EventsTrigger)]
-trait Events {
-    #[taurpc(event)]
-    async fn configs_changed();
-}
-
-#[derive(Clone)]
-struct EventsImpl;
-
-#[taurpc::resolvers]
-impl Events for EventsImpl {}
-
-type AppState = Arc<Mutex<ConfigsState>>;
 
 #[tokio::main]
 async fn main() {

@@ -1,10 +1,10 @@
+import { sceneStateAtom } from '@lib/store'
 import { OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { Suspense, useCallback } from 'react'
 import * as THREE from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
-import { sceneStateAtom } from '../../lib/store'
 import { GltfModel } from './Model'
 import { Target } from './Target'
 

@@ -1,10 +1,10 @@
+import { Joint } from '@lib/bindings'
+import { homeModel } from '@lib/model/load'
+import { Model, sceneStateAtom, selectedModelAtom } from '@lib/store'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { ChangeEvent } from 'react'
 import * as THREE from 'three'
 import { DEG2RAD } from 'three/src/math/MathUtils.js'
-import { Joint } from '../lib/bindings'
-import { homeModel } from '../lib/model/load'
-import { Model, sceneStateAtom, selectedModelAtom } from '../lib/store'
 import { transformModalAtom } from './TransformModal'
 
 export const RobotControllerList = () => {

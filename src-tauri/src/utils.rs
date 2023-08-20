@@ -1,6 +1,5 @@
+use crate::ipc::Config;
 use std::{fs, path::PathBuf};
-
-use crate::Config;
 
 pub fn get_models_dir(path: PathBuf) -> PathBuf {
     path.join("models")

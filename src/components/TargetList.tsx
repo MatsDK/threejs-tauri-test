@@ -1,6 +1,6 @@
+import { nextTargetId, sceneStateAtom } from '@lib/store'
 import { useAtom } from 'jotai'
 import * as THREE from 'three'
-import { nextTargetId, sceneStateAtom } from '../lib/store'
 import { transformModalAtom } from './TransformModal'
 
 export const TargetList = () => {
@@ -17,15 +17,27 @@ export const TargetList = () => {
         </span>
         <button
           onClick={() => {
-            let bones = Array.from(sceneState.models)[0]?.[1].bones
+            const model = Array.from(sceneState.models)[0]?.[1]!
+            let bones = model.bones
             if (!bones) return
-            let x = new THREE.Vector3()
             let pos = Array.from(bones).at(-1)?.[1].boneObject
-              .getWorldPosition(x)
+              .getWorldPosition(new THREE.Vector3())!
 
             let q = Array.from(bones).at(-1)?.[1].boneObject
               .getWorldQuaternion(new THREE.Quaternion())
-            let rot = new THREE.Euler().setFromQuaternion(q!)
+            let rot = new THREE.Euler().setFromQuaternion(
+              q!,
+              'ZYX',
+            )
+
+            // Offset because of Z-up coordinate system? Bone0 is rotated 90deg
+            rot.x -= Math.PI / 2
+
+            let tcp_offset = new THREE.Vector3(...model.config.tcp_offset)
+              .applyEuler(rot)
+
+            // Add rotated tcp offset vector to target pos
+            pos.add(tcp_offset)
 
             setSceneState((prev) => {
               const id = THREE.MathUtils.generateUUID()

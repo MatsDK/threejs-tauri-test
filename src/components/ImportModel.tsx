@@ -1,9 +1,9 @@
+import { Config } from '@lib/bindings'
+import { taurpc } from '@lib/ipc'
+import { sceneStateAtom, selectAtom } from '@lib/store'
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import * as THREE from 'three'
-import { Config } from '../lib/bindings'
-import { taurpc } from '../lib/ipc'
-import { sceneStateAtom, selectAtom } from '../lib/store'
 
 export const ImportModel = () => {
   const [configs, setConfigs] = useState<Config[]>([])

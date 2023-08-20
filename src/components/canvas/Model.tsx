@@ -1,11 +1,11 @@
+import { loadRobotModel } from '@lib/model/load'
+import { Model } from '@lib/store'
 import { useLoader } from '@react-three/fiber'
 import { appLocalDataDir } from '@tauri-apps/api/path'
 import { convertFileSrc } from '@tauri-apps/api/tauri'
 import { useEffect } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { loadRobotModel } from '../../lib/model/load'
-import { Model } from '../../lib/store'
 import { TransformObject } from './TransformObject'
 
 const appLocalDataDirPath = await appLocalDataDir()
