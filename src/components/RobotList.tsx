@@ -1,7 +1,7 @@
 import { Joint } from '@lib/bindings'
 import { homeModel } from '@lib/model/load'
-import { Model, sceneStateAtom } from '@lib/store'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { Model, sceneStateAtom, selectedModelIdAtom } from '@lib/store'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ChangeEvent } from 'react'
 import * as THREE from 'three'
 import { DEG2RAD } from 'three/src/math/MathUtils.js'
@@ -10,6 +10,7 @@ import { transformModalAtom } from './TransformModal'
 export const RobotControllerList = () => {
   const sceneState = useAtomValue(sceneStateAtom)!
   const setTransformModal = useSetAtom(transformModalAtom)
+  const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom)
 
   const handleAngleChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -35,37 +36,51 @@ export const RobotControllerList = () => {
       <div className='flex flex-col pl-2 text-sm'>
         {Array.from(sceneState.models).map(([id, model]) => (
           <div key={id}>
-            <h1 className='font-semibold text-md'>{model.config.name}</h1>
-            <span
+            <h1
               onClick={() => {
-                setTransformModal((prev) => ({
-                  active: true,
-                  mode: 'translate',
-                  object: model.object!,
-                  rotation: new THREE.Euler(),
-                  position: new THREE.Vector3(),
-                }))
+                setSelectedModelId(id)
               }}
+              className='font-semibold text-md'
             >
-              Move
-            </span>
-            <span
-              onClick={() => {
-                setTransformModal((prev) => ({
-                  active: true,
-                  mode: 'rotate',
-                  object: model.object!,
-                  rotation: new THREE.Euler(),
-                  position: new THREE.Vector3(),
-                }))
-              }}
-            >
-              Rotate
-            </span>
+              {model.config.name}
+            </h1>
+            <div className='flex gap-2'>
+              <button
+                className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
+                onClick={() => {
+                  setTransformModal((prev) => ({
+                    active: true,
+                    mode: 'translate',
+                    object: model.object!,
+                    rotation: new THREE.Euler(),
+                    position: new THREE.Vector3(),
+                  }))
+                }}
+              >
+                Move
+              </button>
+              <button
+                className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
+                onClick={() => {
+                  setTransformModal((prev) => ({
+                    active: true,
+                    mode: 'rotate',
+                    object: model.object!,
+                    rotation: new THREE.Euler(),
+                    position: new THREE.Vector3(),
+                  }))
+                }}
+              >
+                Rotate
+              </button>
+            </div>
             <span>Tools</span>
-            <div className='flex justify-between'>
+            <div className='flex justify-between pr-2'>
               <span>Joints</span>
-              <button onClick={() => homeModel(model!)}>
+              <button
+                className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
+                onClick={() => homeModel(model!)}
+              >
                 Home
               </button>
             </div>

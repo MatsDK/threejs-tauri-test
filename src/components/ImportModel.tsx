@@ -26,6 +26,12 @@ export const ImportModel = () => {
 
   useEffect(() => {
     getConfigs()
+
+    const unlisten = taurpc.events.configs_changed.on((...changedConfigs) => {
+      setConfigs(changedConfigs)
+    })
+
+    return unlisten
   }, [])
 
   return (

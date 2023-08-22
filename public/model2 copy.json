@@ -43,7 +43,7 @@
       "constraints": {
         "axis": "x",
         "min": -90,
-        "home": 90,
+        "home": 82.56812,
         "max": 90
       }
     },

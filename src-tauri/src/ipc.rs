@@ -49,7 +49,7 @@ impl RootApi for RootApiImpl {
 #[taurpc::procedures(path = "events", event_trigger = EventsTrigger)]
 pub trait Events {
     #[taurpc(event)]
-    async fn configs_changed();
+    async fn configs_changed(configs: Vec<Config>);
 }
 
 #[derive(Clone)]

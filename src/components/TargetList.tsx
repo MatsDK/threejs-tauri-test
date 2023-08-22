@@ -1,3 +1,4 @@
+import { solve } from '@/lib/model/solveIK'
 import { nextTargetId, sceneStateAtom, selectedModelAtom } from '@lib/store'
 import { useAtom, useAtomValue } from 'jotai'
 import * as THREE from 'three'
@@ -28,14 +29,15 @@ export const TargetList = () => {
               .getWorldQuaternion(new THREE.Quaternion())
             let rot = new THREE.Euler().setFromQuaternion(
               q!,
-              'ZYX',
             )
 
             // Offset because of Z-up coordinate system? Bone0 is rotated 90deg
-            rot.x -= Math.PI / 2
+            // rot.x -= Math.PI / 2
 
             let tcp_offset = new THREE.Vector3(
-              ...selectedModel.config.tcp_offset,
+              0,
+              selectedModel.config.tcp_offset[2],
+              0,
             )
               .applyEuler(rot)
 
@@ -75,51 +77,69 @@ export const TargetList = () => {
       </div>
       <ul>
         {Array.from(sceneState.targets).map(([id, target]) => (
-          <li key={id}>
-            {target.name}
-            <button
-              onClick={() => {
-                setTransformModalState((prev) => ({
-                  active: true,
-                  mode: 'translate',
-                  object: target.object!,
-                  rotation: new THREE.Euler(),
-                  position: new THREE.Vector3(),
-                }))
-              }}
-            >
-              Translate
-            </button>
-            <button
-              onClick={() => {
-                setTransformModalState((prev) => ({
-                  active: true,
-                  mode: 'rotate',
-                  object: target.object!,
-                  rotation: new THREE.Euler(),
-                  position: new THREE.Vector3(),
-                }))
-              }}
-            >
-              Rotate
-            </button>
-            <button
-              onClick={() => {
-                setSceneState((prev) => {
-                  prev.targets.delete(id)
-                  return { ...prev }
-                })
+          <li key={id} className='flex gap-2 py-1 text-sm px-2'>
+            <span>
+              {target.name}
+            </span>
 
-                if (
-                  transformModalState.active
-                  && transformModalState.object.id == target.object?.id
-                ) {
-                  setTransformModalState({ active: false })
-                }
-              }}
-            >
-              Remove
-            </button>
+            <div className='flex gap-2'>
+              <button
+                className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
+                onClick={() => {
+                  setTransformModalState((prev) => ({
+                    active: true,
+                    mode: 'translate',
+                    object: target.object!,
+                    rotation: new THREE.Euler(),
+                    position: new THREE.Vector3(),
+                  }))
+                }}
+              >
+                Translate
+              </button>
+              <button
+                className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
+                onClick={() => {
+                  setTransformModalState((prev) => ({
+                    active: true,
+                    mode: 'rotate',
+                    object: target.object!,
+                    rotation: new THREE.Euler(),
+                    position: new THREE.Vector3(),
+                  }))
+                }}
+              >
+                Rotate
+              </button>
+              <button
+                className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
+                onClick={() => {
+                  if (target.object?.matrix.elements && selectedModel) {
+                    solve(target.object?.matrix.elements, selectedModel)
+                  }
+                }}
+              >
+                Robot at target
+              </button>
+              <button
+                className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
+                onClick={() => {
+                  setSceneState((prev) => {
+                    prev.targets.delete(id)
+                    return { ...prev }
+                  })
+
+                  if (
+                    transformModalState.active
+                    && transformModalState.object.id == target.object?.id
+                  ) {
+                    setTransformModalState({ active: false })
+                  }
+                }}
+              >
+                Remove
+              </button>
+            </div>
           </li>
         ))}
       </ul>

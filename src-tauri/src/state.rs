@@ -1,9 +1,10 @@
 use crate::{
-    ipc::Config,
+    ipc::{AppState, Config, EventsTrigger},
     utils::{get_models_dir, load_configs},
 };
-use notify::{RecursiveMode, Watcher};
+use notify::Watcher;
 use std::{fs, path::PathBuf};
+use tauri::AppHandle;
 
 #[derive(Default)]
 pub struct ConfigsState {
@@ -30,26 +31,54 @@ impl ConfigsState {
         self.local_data_path = Some(path);
     }
 
-    pub fn watch_local_data_dir(&self) -> notify::Result<()> {
-        let mut watcher = notify::recommended_watcher(|res| match res {
-            Ok(event) => println!("event: {:?}", event),
-            Err(e) => println!("watch error: {:?}", e),
-        })?;
-
-        watcher.watch(
-            self.local_data_path.as_ref().unwrap().as_path(),
-            RecursiveMode::Recursive,
-        )?;
-        // println!("{:?}", self.local_data_path);
-
-        Ok(())
-    }
-
     pub fn get_configs(&self) -> Vec<Config> {
         self.configs.clone()
     }
 
     pub fn load_configs(&mut self) {
-        self.configs = load_configs(self.local_data_path.as_ref().unwrap())
+        match load_configs(self.local_data_path.as_ref().unwrap()) {
+            Ok(configs) => self.configs = configs,
+            Err(e) => {
+                eprintln!("Error while loading configs: {e}")
+            }
+        }
     }
+}
+
+pub async fn watch_local_data_dir(
+    path: &PathBuf,
+    state: AppState,
+    app_handle: AppHandle,
+) -> notify::Result<()> {
+    let (tx, rx) = std::sync::mpsc::channel();
+    let mut watcher = notify::RecommendedWatcher::new(tx, notify::Config::default())?;
+
+    // let path = self.local_data_path.as_ref().unwrap();
+    watcher.watch(&path, notify::RecursiveMode::Recursive)?;
+
+    let event_trigger = EventsTrigger::new(app_handle);
+
+    for res in rx {
+        match res {
+            Ok(_event) => {
+                // match event.kind {
+                // EventKind::Modify(d) => {
+                //     println!("Modify event: {d:?}")
+                // }
+                // _ => {
+                //     println!("Other event: {event:?}")
+                // }
+                // }
+
+                let mut state = state.lock().await;
+                state.load_configs();
+                let configs = state.get_configs();
+
+                event_trigger.configs_changed(configs).unwrap();
+            }
+            Err(error) => eprintln!("Error: {error:?}"),
+        }
+    }
+
+    Ok(())
 }

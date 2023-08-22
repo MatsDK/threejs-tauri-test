@@ -7,7 +7,7 @@ mod utils;
 
 use ipc::*;
 
-use state::ConfigsState;
+use state::{watch_local_data_dir, ConfigsState};
 use std::sync::Arc;
 use tauri::Manager;
 use tokio::sync::Mutex;
@@ -34,13 +34,19 @@ async fn main() {
             let state = state.clone();
             tokio::spawn(async move {
                 let path = app_handle.path_resolver().app_local_data_dir().unwrap();
-                let mut state = state.lock().await;
-                state.set_local_data_path(path);
-                // Already start loading the configs
-                state.load_configs();
-                // drop(state);
 
-                state.watch_local_data_dir().unwrap();
+                let mut state_lock = state.lock().await;
+                state_lock.set_local_data_path(path);
+                // Load the configs into state
+                state_lock.load_configs();
+
+                let path = state_lock.local_data_path.as_ref().unwrap().clone();
+                drop(state_lock);
+
+                // Watch for config changes
+                watch_local_data_dir(&path, state, app_handle)
+                    .await
+                    .unwrap();
             });
             Ok(())
         })

@@ -6,11 +6,15 @@ import { Bone, Model, sceneStateAtom, store } from '../store'
 export const loadRobotModel = (model: Model, armature: THREE.Object3D) => {
   let bones: Map<string, Bone> = new Map()
 
+  console.log(armature.getObjectByName('Armature')!.rotation.x = Math.PI / 2)
+
   model.config.joints.forEach((joint) => {
     let boneObject = armature.getObjectByName(joint.id)
     let mesh = armature.getObjectByName(joint.mesh_id)
 
     if (!boneObject || !mesh) return
+
+    if (joint.id === 'Bone0') boneObject.rotation.x = 0
 
     bones.set(joint.id, {
       boneObject,
@@ -24,15 +28,13 @@ export const loadRobotModel = (model: Model, armature: THREE.Object3D) => {
     return { ...prev }
   })
 
-  store.set(transformModalAtom, () => {
-    return {
-      active: true,
-      object: armature,
-      mode: 'translate',
-      rotation: new THREE.Euler(),
-      position: new THREE.Vector3(),
-    }
-  })
+  store.set(transformModalAtom, () => ({
+    active: true,
+    object: armature,
+    mode: 'translate',
+    rotation: new THREE.Euler(),
+    position: new THREE.Vector3(),
+  }))
 
   homeModel(model)
 }

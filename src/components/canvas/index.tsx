@@ -2,7 +2,7 @@ import { sceneStateAtom } from '@lib/store'
 import { OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
-import { Suspense, useCallback } from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import { GltfModel } from './Model'
@@ -45,6 +45,9 @@ export const ThreeCanvas = () => {
       />
 
       <OrbitControls ref={orbitRef} />
+
+      {/* <Test /> */}
+
       <OutlineController>
         <group>
           {Array.from(sceneState.models).map(([id, model]) => (
@@ -62,6 +65,33 @@ export const ThreeCanvas = () => {
   )
 }
 
+const Test = () => {
+  const [test, setTest] = useState<THREE.Mesh | null>(null)
+  const ref = useCallback((node: THREE.Mesh) => {
+    setTest(node)
+  }, [])
+
+  useEffect(() => {
+    if (!test) return
+
+    setInterval(() => {
+      const rot = new THREE.Matrix3().setFromMatrix4(test.matrix)
+      const pos = new THREE.Vector3().applyMatrix4(test.matrix)
+    }, 2000)
+  }, [test])
+
+  return (
+    <mesh
+      ref={ref}
+      position={[2, 3, 4]}
+      rotation={[Math.PI / 6, 0, 0]}
+    >
+      <planeGeometry args={[2, 2]} />
+      <meshStandardMaterial />
+    </mesh>
+  )
+}
+
 import { EffectComposer, Outline, Selection } from '@react-three/postprocessing'
 
 const OutlineController = (
@@ -73,7 +103,7 @@ const OutlineController = (
         <Outline
           blur
           visibleEdgeColor={0xffffff}
-          edgeStrength={2}
+          edgeStrength={1}
           width={1500}
           hiddenEdgeColor={0x0000ff}
         />
