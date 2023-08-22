@@ -1,7 +1,5 @@
-# Tauri + React + Typescript
+# Robot Inverse Kinematics Simulator
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+WIP
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+![image](https://github.com/MatsDK/threejs-tauri-test/assets/67562518/395f6d93-3216-490a-9838-9adc334b2eb0)
