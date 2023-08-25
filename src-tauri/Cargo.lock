@@ -2934,9 +2934,9 @@ dependencies = [
 
 [[package]]
 name = "taurpc"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b4f6636797d259b72b11d9f03828134fa72d601e1de8cea9347af1219114e6b"
+checksum = "a67325529200ff9e23a42e428020dd9ffefbae333e6039e57ac8f3d8b7e2b8ce"
 dependencies = [
  "serde",
  "serde_json",
@@ -2948,9 +2948,9 @@ dependencies = [
 
 [[package]]
 name = "taurpc-macros"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc2dcd13e269c1ff6696a5d15b91b793af2c8b55a81b509cb515e7b6566d60e6"
+checksum = "7378b7207efc9337e84d286cb202089df082791dee1c8439e9b6eed66e225b1c"
 dependencies = [
  "proc-macro2",
  "quote",

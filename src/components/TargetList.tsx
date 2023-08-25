@@ -115,7 +115,27 @@ export const TargetList = () => {
                 className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
                 onClick={() => {
                   if (target.object?.matrix.elements && selectedModel) {
-                    solve(target.object?.matrix.elements, selectedModel)
+                    const [t1, t2, t3] = solve(
+                      target.object?.matrix.elements,
+                      selectedModel,
+                    )
+
+                    selectedModel.config.joints.forEach((joint) => {
+                      console.log(joint)
+                      const bone = selectedModel.bones.get(joint.id)
+                      if (!bone) {
+                        return
+                      }
+                      if (joint.id === 'Bone1') {
+                        bone.boneObject.rotation.y = t1!
+                      } else if (joint.id === 'Bone2') {
+                        bone.boneObject.rotation.x = t2!
+                        // bone.boneObject.rotation.x = Math.PI / 2 - t2!
+                      } else if (joint.id === 'Bone3') {
+                        bone.boneObject.rotation.x = t3!
+                        // bone.boneObject.rotation.x = -t3!
+                      }
+                    })
                   }
                 }}
               >

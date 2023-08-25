@@ -23,8 +23,8 @@ dependencies:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
   taurpc:
-    specifier: ^1.4.0
-    version: 1.4.0
+    specifier: ^1.4.2
+    version: 1.4.2
   three:
     specifier: ^0.155.0
     version: 0.155.0
@@ -1923,8 +1923,8 @@ packages:
       - ts-node
     dev: true
 
-  /taurpc@1.4.0:
-    resolution: {integrity: sha512-GwX6ah38VVgmBofQjJyEr+Btc60yysbafM3G/BA669z7V8RrCcKC+3KiZe43FDQlPcnl/A5AoqeSpzeyG/v0sQ==}
+  /taurpc@1.4.2:
+    resolution: {integrity: sha512-iVnQ+sJIOm0CEgRiEGAjB6XZDSFGKGkKNhxIYSnPW2Ci5XTCc1pR5Wu3gy4Rlz1p9L9v+51Kh3s1GJQzusmoNQ==}
     dependencies:
       '@tauri-apps/api': 1.4.0
     dev: false
