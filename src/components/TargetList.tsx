@@ -115,10 +115,23 @@ export const TargetList = () => {
                 className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
                 onClick={() => {
                   if (target.object?.matrix.elements && selectedModel) {
-                    const [t1, t2, t3] = solve(
+                    const [W, solutions] = solve(
                       target.object?.matrix.elements,
                       selectedModel,
                     )
+
+                    const [t1, t2, t3] = solutions[1]!
+
+                    setSceneState((prev) => {
+                      const id = THREE.MathUtils.generateUUID()
+                      prev.targets.set(id, {
+                        id,
+                        name: `Target${nextTargetId()}`,
+                        object: null,
+                        pos: W,
+                      })
+                      return { ...prev }
+                    })
 
                     selectedModel.config.joints.forEach((joint) => {
                       console.log(joint)
@@ -129,11 +142,11 @@ export const TargetList = () => {
                       if (joint.id === 'Bone1') {
                         bone.boneObject.rotation.y = t1!
                       } else if (joint.id === 'Bone2') {
-                        bone.boneObject.rotation.x = t2!
-                        // bone.boneObject.rotation.x = Math.PI / 2 - t2!
+                        // bone.boneObject.rotation.x = t2!
+                        bone.boneObject.rotation.x = Math.PI / 2 - t2!
                       } else if (joint.id === 'Bone3') {
-                        bone.boneObject.rotation.x = t3!
-                        // bone.boneObject.rotation.x = -t3!
+                        // bone.boneObject.rotation.x = t3!
+                        bone.boneObject.rotation.x = -t3!
                       }
                     })
                   }

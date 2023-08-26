@@ -4,7 +4,7 @@ import { Model } from '../store'
 // TODO: Should be inside model config
 const d1 = 1.723603
 const d2 = 1.57888
-const d3 = 1.387391
+const d3 = 0.911095 + 0.476296
 const d6 = 0.330651
 
 export const solve = (Tend: number[], model: Model) => {
@@ -28,11 +28,11 @@ export const solve = (Tend: number[], model: Model) => {
 
   // console.log('Base: ', baseRotation, baseTranslation)
   // console.log('End: ', globalEndRotation, globalEndTranslation)
-  console.log(
-    'target relative to base',
-    relativeEndRotation,
-    relativeEndTranslation,
-  )
+  // console.log(
+  //   'target relative to base',
+  //   relativeEndRotation,
+  //   relativeEndTranslation,
+  // )
 
   // Get wrist position, subtract length of wrist to TCP in target y-direction, from target
   // Wx = px - d6*r12
@@ -54,17 +54,22 @@ export const solve = (Tend: number[], model: Model) => {
   const r = Math.sqrt(W.x ** 2 + W.y ** 2)
   const s = W.z - d1
 
-  const t3 = Math.acos((r ** 2 + s ** 2 - d2 ** 2 - d3 ** 2) / (2 * d2 * d3))
-  const t2 = Math.asin(
+  const solutions: Array<[number, number, number]> = []
+
+  let t3 = Math.acos((r ** 2 + s ** 2 - d2 ** 2 - d3 ** 2) / (2 * d2 * d3))
+  let t2 = Math.asin(
     ((d2 + d3 * Math.cos(t3)) * s - d3 * Math.sin(t3) * r) / (r ** 2 + s ** 2),
   )
-  // const t22 = Math.acos(
-  //   ((d2 + d3 * Math.cos(t3)) * r + d3 * Math.sin(t3) * s) / (r ** 2 + s ** 2),
-  // )
+  solutions.push([t1, t2, t3])
+  t3 *= -1
+  t2 = Math.asin(
+    ((d2 + d3 * Math.cos(t3)) * s - d3 * Math.sin(t3) * r) / (r ** 2 + s ** 2),
+  )
+  solutions.push([t1, t2, t3])
 
-  console.log('t1, t2, t3, r, s', t1 + Math.PI / 2, t2, t3, r, s)
+  console.log('solutions', solutions)
 
-  return [t1, t2, t3]
+  return [W.add(baseTranslation), solutions] as const
 
   // return
   // model.bones.forEach((bone) => {
