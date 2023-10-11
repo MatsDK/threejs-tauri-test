@@ -43,8 +43,8 @@ export type TauRpcEventsInputTypes = {
 }
 
 const ARGS_MAP = {
-  '': '{"get_configs":[]}',
   'events': '{"configs_changed":["configs"]}',
+  '': '{"get_configs":[]}',
 }
 import { createTauRPCProxy as createProxy } from 'taurpc'
 

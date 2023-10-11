@@ -44,6 +44,9 @@ export const TargetList = () => {
             // Add rotated tcp offset vector to target pos
             pos.add(tcp_offset)
 
+            // let x = new THREE.Matrix4().makeRotationFromEuler(rot)
+            // x.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2))
+
             setSceneState((prev) => {
               const id = THREE.MathUtils.generateUUID()
               prev.targets.set(id, {
@@ -52,6 +55,7 @@ export const TargetList = () => {
                 object: null,
                 pos,
                 rot,
+                // rot: new THREE.Euler().setFromRotationMatrix(x),
               })
               return { ...prev }
             })
@@ -120,7 +124,7 @@ export const TargetList = () => {
                       selectedModel,
                     )
 
-                    const [t1, t2, t3] = solutions[1]!
+                    const [t1, t2, t3, t4] = solutions[1]!
 
                     setSceneState((prev) => {
                       const id = THREE.MathUtils.generateUUID()
@@ -147,6 +151,9 @@ export const TargetList = () => {
                       } else if (joint.id === 'Bone3') {
                         // bone.boneObject.rotation.x = t3!
                         bone.boneObject.rotation.x = -t3!
+                      } else if (joint.id === 'Bone4') {
+                        // bone.boneObject.rotation.x = t3!
+                        // bone.boneObject.rotation.y = t4!
                       }
                     })
                   }

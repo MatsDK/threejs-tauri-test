@@ -73,6 +73,23 @@ export const RobotControllerList = () => {
               >
                 Rotate
               </button>
+              <button
+                className='bg-zinc-800 bg-opacity-40 border border-zinc-800 rounded-md px-2'
+                onClick={() => {
+                  setTransformModal((prev) => ({
+                    active: true,
+                    mode: 'rotate',
+                    object: model.object!,
+                    rotation: new THREE.Euler(),
+                    position: new THREE.Vector3(),
+                    onChange: (rot, pos) => {
+                      console.log(rot, pos)
+                    },
+                  }))
+                }}
+              >
+                Move TCP
+              </button>
             </div>
             <span>Tools</span>
             <div className='flex justify-between pr-2'>

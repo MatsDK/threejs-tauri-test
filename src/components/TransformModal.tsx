@@ -3,12 +3,13 @@ import { FormEvent, useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { DEG2RAD, RAD2DEG } from 'three/src/math/MathUtils.js'
 
-type TransformModalState = { active: false } | {
+type TransformModalState = { active: false; onChange?: () => void } | {
   active: true
   object: THREE.Object3D
   mode: 'translate' | 'rotate'
   position: THREE.Vector3
   rotation: THREE.Euler
+  onChange?: (rot: THREE.Euler, pos: THREE.Vector3) => void
 }
 
 export const transformModalAtom = atom<TransformModalState>({ active: false })
@@ -26,6 +27,8 @@ export const TransformModal = () => {
     // Apply input values to Object3D
     state.object.rotation.copy(state.rotation)
     state.object.position.copy(state.position)
+
+    state.onChange?.(state.object.rotation, state.object.position)
   }
 
   return (
@@ -92,7 +95,7 @@ export const TransformModal = () => {
         </label>
 
         <form
-          id='rotatoin'
+          id='rotation'
           className='grid grid-cols-3 w-full '
           onSubmit={submit}
         >

@@ -38,6 +38,12 @@ export const TransformObject = (
       > = (e) => {
         const object = e.target.object as THREE.Object3D
 
+        transformModalState.active
+          && transformModalState.onChange?.(
+            object.rotation.clone(),
+            object.position.clone(),
+          )
+
         setTransformModalState((prev) => ({
           ...prev,
           position: object.position.clone(),
@@ -64,7 +70,7 @@ export const TransformObject = (
         transform.removeEventListener('dragging-changed', draggingCb)
       }
     }
-  }, [orbitControls, transform])
+  }, [orbitControls, transform, transformModalState.onChange])
 
   return (
     <>

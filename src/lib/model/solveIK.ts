@@ -49,23 +49,50 @@ export const solve = (Tend: number[], model: Model) => {
   console.log('Wrist pos', W)
 
   // Calculate first 3 angles that are required to move the wrist to the position calculated above.
-  const t1 = Math.atan(W.y / W.x)
+  const t1 = Math.atan2(W.y, W.x)
+  console.log('t1', t1)
 
   const r = Math.sqrt(W.x ** 2 + W.y ** 2)
   const s = W.z - d1
 
-  const solutions: Array<[number, number, number]> = []
+  const solutions: Array<[number, number, number, number]> = []
 
   let t3 = Math.acos((r ** 2 + s ** 2 - d2 ** 2 - d3 ** 2) / (2 * d2 * d3))
   let t2 = Math.asin(
     ((d2 + d3 * Math.cos(t3)) * s - d3 * Math.sin(t3) * r) / (r ** 2 + s ** 2),
   )
-  solutions.push([t1, t2, t3])
+  let t4 = Math.atan2(
+    -Math.cos(t1) * Math.sin(t2 + t3)
+        * relativeEndRotation.transpose().elements[1]!
+      - Math.sin(t1) * Math.sin(t2 + t3)
+        * relativeEndRotation.transpose().elements[4]!
+      + Math.cos(t2 + t3) * relativeEndRotation.transpose().elements[4]!,
+    Math.cos(t1) * Math.cos(t2 + t3)
+        * relativeEndRotation.transpose().elements[1]!
+      + Math.sin(t1) * Math.cos(t2 + t3)
+        * relativeEndRotation.transpose().elements[4]!
+      + Math.sin(t2 + t3) * relativeEndRotation.transpose().elements[4]!,
+  )
+
+  solutions.push([t1, t2, t3, t4])
   t3 *= -1
   t2 = Math.asin(
     ((d2 + d3 * Math.cos(t3)) * s - d3 * Math.sin(t3) * r) / (r ** 2 + s ** 2),
   )
-  solutions.push([t1, t2, t3])
+  t4 = Math.atan2(
+    -Math.cos(t1) * Math.sin(t2 + t3)
+        * relativeEndRotation.transpose().elements[1]!
+      - Math.sin(t1) * Math.sin(t2 + t3)
+        * relativeEndRotation.transpose().elements[4]!
+      + Math.cos(t2 + t3) * relativeEndRotation.transpose().elements[4]!,
+    Math.cos(t1) * Math.cos(t2 + t3)
+        * relativeEndRotation.transpose().elements[1]!
+      + Math.sin(t1) * Math.cos(t2 + t3)
+        * relativeEndRotation.transpose().elements[4]!
+      + Math.sin(t2 + t3) * relativeEndRotation.transpose().elements[4]!,
+  )
+
+  solutions.push([t1, t2, t3, t4])
 
   console.log('solutions', solutions)
 
